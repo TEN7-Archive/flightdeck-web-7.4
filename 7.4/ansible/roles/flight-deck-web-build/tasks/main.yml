@@ -67,7 +67,6 @@
     - "freetds-dev"
     - "nodejs"
     - "nodejs-npm"
-    - "libsass"
   notify:
     - clear caches
 - name: Ensure key directories are owned by apache
@@ -83,6 +82,7 @@
     - "/etc/ssl/apache2"
     - "/etc/apache2/sites.d"
     - "/etc/php7"
+    - "/etc/wpcli"
     - "/run/apache2"
     - "/var/log/apache2"
     - "/var/www"
@@ -154,7 +154,15 @@
     - src:  "/etc/drush10/vendor/bin/drush"
       dest: "/var/www/.composer/vendor/bin/drush"
     - src: "/etc/drush8/vendor/bin/drush"
-      dest: /usr/local/bin/drush8
+      dest: "/usr/local/bin/drush8"
+- name: Install Wordpress CLI
+  shell: >
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && mv wp-cli.phar wp && chmod +x wp
+  args:
+    chdir: "/etc/wpcli"
+  become: yes
+  become_user: "apache"
+  become_method: "su"
 - name: Set node global packages to install as user-local
   shell: >
     npm config set prefix '/var/www/.npm-global'
