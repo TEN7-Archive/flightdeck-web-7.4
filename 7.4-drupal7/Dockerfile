@@ -5,6 +5,10 @@ MAINTAINER tess@ten7.com
 USER root
 RUN setcap cap_net_bind_service=+ep /usr/sbin/httpd
 
-# Use drush to 8.x for Drupal 7
+# Downgrade drush to 8.x for Drupal 7
 USER apache
-ENV DRUSH_VERSION "8.x"
+RUN rm -rf /var/www/.composer && \
+    composer global require consolidation/cgr && \
+    /var/www/.composer/vendor/bin/cgr drush/drush:~8.4.0 && \
+    /var/www/.composer/vendor/bin/drush core:init -y && \
+    rm -rf /var/www/.composer/cache

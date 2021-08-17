@@ -65,10 +65,17 @@
     - "openssh-client"
     - "unixodbc-dev"
     - "freetds-dev"
-    - "nodejs"
-    - "nodejs-npm"
   notify:
     - clear caches
+# Install node from Alpine 3.12 as Node SASS doesn't support the newer node on
+# the Alpine 3.13 repos just yet.
+- name: Install node
+  command: >
+    apk add
+    --repository https://dl-cdn.alpinelinux.org/alpine/v3.12/main
+    nodejs=12.22.1-r0
+    nodejs-npm=12.22.1-r0
+    libsass=3.6.4-r0
 - name: Ensure key directories are owned by apache
   file:
     path: "{{ item }}"
@@ -82,7 +89,6 @@
     - "/etc/ssl/apache2"
     - "/etc/apache2/sites.d"
     - "/etc/php7"
-    - "/etc/wpcli"
     - "/run/apache2"
     - "/var/log/apache2"
     - "/var/www"
@@ -112,54 +118,11 @@
     - "/var/log/apache2/error.log"
     - "/var/log/apache2/000_default-error_log"
     - "/var/log/apache2/000_default_ssl-error_log"
-- name: Make drush directories
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: "apache"
-    group: "apache"
-    mode: "u=rwx,g=rwx,o=r"
-  loop:
-    - "/etc/drush8"
-    - "/etc/drush10"
-    - "/var/www/.composer/vendor/bin"
-- name: Install Drush 10.x
+- name: Install Drush
   shell: >
-    composer require drush/drush:{{ flightdeck_drush_version | default('^10.0.0') }} &&
-    /etc/drush10/vendor/bin/drush core:init -y
-  args:
-    chdir: "/etc/drush10"
-  become: yes
-  become_user: "apache"
-  become_method: "su"
-- name: Install Drush 8.x
-  shell: >
-    composer require drush/drush:{{ flightdeck_drush_version | default('^8.0.0') }} &&
-    /etc/drush8/vendor/bin/drush core:init -y
-  args:
-    chdir: "/etc/drush8"
-  become: yes
-  become_user: "apache"
-  become_method: "su"
-- name: Add global drush symlinks
-  file:
-    src: "{{ item.src }}"
-    dest: "{{ item.dest }}"
-    state: link
-    force: yes
-    follow: no
-  loop:
-    - src: "/etc/drush10/vendor/bin/drush"
-      dest: "/usr/local/bin/drush10"
-    - src:  "/etc/drush10/vendor/bin/drush"
-      dest: "/var/www/.composer/vendor/bin/drush"
-    - src: "/etc/drush8/vendor/bin/drush"
-      dest: "/usr/local/bin/drush8"
-- name: Install Wordpress CLI
-  shell: >
-    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && mv wp-cli.phar wp && chmod +x wp
-  args:
-    chdir: "/etc/wpcli"
+    composer global require consolidation/cgr &&
+    /var/www/.composer/vendor/bin/cgr drush/drush:{{ flightdeck_drush_version | default('^10.0.0') }} &&
+    /var/www/.composer/vendor/bin/drush core:init -y
   become: yes
   become_user: "apache"
   become_method: "su"

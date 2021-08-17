@@ -15,28 +15,24 @@ There are several tags available for this container, each with different softwar
 
 | Tags | PHP version | Drupal versions | Drush |
 | ---- | ----------- | --------------- | ----- |
-| latest | 7.4 | 7, 8, 9 | 8.x and 10.x |
-| x.y.z | 7.4 | 7, 8, 9 | 8.x and 10.x |
+| latest | 7.4 | 8, 9 | 10.x |
+| drupal7 | 7.4 | 7 | 8.x |
+| x.y.z | 7.4 | 8, 9 | 10.x |
+| drupal-7-x.y.z | 7.4 | 8, 9 | 10.x |
 
 Where:
  * **x.y.z** is the container version as seen on the [tags page](https://github.com/ten7/flightdeck-web-7.4/tags)
 
 ## Configuration
 
-Instead of a large number of environment variables, this container relies on a file to perform all runtime configuration, `flightdeck-web.yml`. Inside the file, create following:
+This container does not use environment variables for configuration. Instead, the `flight-deck-web.yml` file is used to handle all configuration.
 
 ```yaml
 ---
 flightdeck_web: {}
 ```
 
-All configuration is done as items under the `flightdeck_web` variable. See the following sections for details as to particular configurations.
-
-You can provide this file in one of three ways to the container:
-
-* Mount the configuration file at path `/config/web/flightdeck-web.yml` inside the container using a bind mount, configmap, or secret.
-* Mount the config file anywhere in the container, and set the `FLIGHTDECK_CONFIG_FILE` environment variable to the path of the file.
-* Encode the contents of `flightdeck-web.yml` as base64 and assign the result to the `FLIGHTDECK_CONFIG` environment variable. 
+All configuration is done as items under the `flightdeck_web` variable. See the following sections for details.
 
 ### Configuring virtual hosts
 
@@ -108,23 +104,6 @@ Where:
 * **display_startup_errors** specifies if startup errors should be written to the output of web requests. Optional, defaults to `no`.
 * **error_log** is the full path inside the container to write the PHP error log. Optional, defaults to the docker log collector at `/dev/stderr`.
 * **variables_order** specifies the order and types of variables to make available when serving web requests. Optional, defaults to production values.
-
-### Drush version
-
-This container assumes Drush 10 out of the box. To use Drush 8.x for Drupal 7, set the `flightdeck_web.drush.version` key:
-
-```yaml
----
-flightdeck_web:
-  drush:
-    version: 8.x
-```
-
-Where:
-
-* **version** is the Drush version series to use, either `8.x` or `10.x`.
-
-Alternatively, you may choose to set the `DRUSH_VERSION` environment variable to `8.x`. This is only respected on container startup. To force a particular command invocation to use Drush 8.x, use the `drush8` command instead of `drush`.
 
 ### XDebug configuration
 

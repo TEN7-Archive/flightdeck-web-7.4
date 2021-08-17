@@ -13,9 +13,7 @@ flightdeck_root_prompt: '\u@flight-deck-web:\w# '
 flightdeck_user_prompt: '\u@flight-deck-web:\w$ '
 
 flightdeck_run_commands: |
-  if [ -f "${FLIGHTDECK_WEB_SETTINGS}" ]; then
-    ansible-playbook -i /ansible/inventories/all.ini -e "@${FLIGHTDECK_WEB_SETTINGS}" /ansible/run.yml
-  elif [ -f "/config/web/flight-deck-web.yml" ]; then
+  if [ -f "/config/web/flight-deck-web.yml" ]; then
     ansible-playbook -i /ansible/inventories/all.ini -e "@/config/web/flight-deck-web.yml" /ansible/run.yml
   elif [ -f "/secrets/flight-deck-web.yml" ]; then
     ansible-playbook -i /ansible/inventories/all.ini -e "@/secrets/flight-deck-web.yml" /ansible/run.yml
@@ -26,7 +24,6 @@ flightdeck_run_commands: |
 flightdeck_path:
   - "/var/www/.composer/vendor/bin"
   - "/var/www/.npm-global/bin"
-  - "/etc/wpcli"
 
 flightdeck_env:
   - name: "COMPOSER_MEMORY_LIMIT"
