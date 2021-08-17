@@ -126,6 +126,14 @@
   become: yes
   become_user: "apache"
   become_method: "su"
+- name: Install Wordpress CLI
+  args:
+    chdir: "/etc/wpcli"
+  become: yes
+  become_user: "apache"
+  become_method: "su"
+  shell: >
+    curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && mv wp-cli.phar wp && chmod +x wp
 - name: Set node global packages to install as user-local
   shell: >
     npm config set prefix '/var/www/.npm-global'
